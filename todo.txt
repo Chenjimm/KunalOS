@@ -1,0 +1,128 @@
+🛠️ 第0天：心态与工具链准备
+目标：搭建不依赖宿主机的“交叉编译”环境。
+任务：
+安装 Linux 环境（推荐 Ubuntu 或 WSL2）。
+安装工具链：nasm (汇编器), gcc (交叉编译器 i686-elf-gcc), ld (链接器), qemu-system-i386 (模拟器), gdb (调试器), make。
+避坑：绝对不要用宿主机的 gcc 编译内核，必须编译一个 i686-elf 交叉编译器，否则会被各种C库依赖坑死。
+建立项目目录结构：boot/, kernel/, drivers/, lib/, include/。
+🟢 阶段一：唤醒钢铁（Bootloader 与实模式）
+计算机通电后，BIOS/UEFI 会加载硬盘的第一个扇区（MBR）到内存 0x7C00 处并执行。
+[done]Day 1：Hello MBR
+用 NASM 编写 512 字节的引导扇区代码。
+使用 BIOS 中断 int 0x10 在屏幕上打印 "Hello, OS!"。
+在代码末尾加上魔数 0xAA55，用 dd 命令写入虚拟磁盘镜像，用 QEMU 启动看到画面。
+[done]Day 2：读取磁盘与第二阶段 Bootloader
+MBR 只有 512 字节，不够用。编写代码使用 BIOS 中断 int 0x13 将硬盘后续扇区（第二阶段代码）加载到内存。
+跳转执行第二阶段代码。
+Day 3：开启 A20 线与 GDT（全局描述符表）
+理解实模式（1MB内存限制）与保护模式（4GB内存）的区别。
+通过键盘控制器或 BIOS 开启 A20 地址线。
+在内存中构建 GDT，定义代码段和数据库。
+Day 4：跃迁保护模式
+设置 CR0 寄存器的 PE 位，正式进入 32 位保护模式。
+通过远跳转（Far Jump）刷新 CS 寄存器，加载新的 GDT 段选择子。
+Day 5：加载 C 语言内核
+在第二阶段 Bootloader 中，将内核的 ELF 或二进制文件加载到指定内存地址（如 0x100000 / 1MB处）。
+设置栈指针（ESP），使用汇编 jmp 跳转到 C 语言的 kernel_main() 函数。
+🟡 阶段二：内核的感官（屏幕、串口与中断）
+进入 C 语言世界，开始接管硬件。
+Day 6：VGA 文本模式驱动
+抛弃 BIOS 中断。直接操作显存物理地址 0xB8000。
+实现 kputchar() 和 kputs()，处理光标换行、滚屏逻辑。
+Day 7：实现 kprintf
+实现变参函数（va_list）。
+支持 %d, %x, %s, %c 格式化输出。这是你未来几个月最重要的调试工具。
+Day 8：串口输出（Serial Port）
+配置 8250 UART 串口（端口 0x3F8）。
+实现 serial_putc()，将内核日志同时输出到 QEMU 的终端，实现“黑盒调试”。
+Day 9：IDT（中断描述符表）与异常处理
+构建 IDT，注册 32 个 CPU 内部异常处理函数（如除零错误、页错误、双重故障）。
+编写汇编的 isr_stub，保存寄存器上下文，调用 C 语言异常处理函数，打印错误信息并死机（Panic）。
+Day 10：PIC（可编程中断控制器）与定时器
+初始化 8259A PIC，将硬件中断重映射到 IDT 的 32-47 号位置（避开 CPU 异常）。
+配置 PIT（可编程间隔定时器），设置每秒 100 次中断（Tick）。
+实现内核的 sleep() 和系统运行时间统计。
+🟠 阶段三：交互与记忆（键盘与物理内存）
+让 OS 能够接收输入，并管理有限的物理资源。
+Day 11：PS/2 键盘驱动
+编写 IRQ1（键盘中断）处理函数。
+从端口 0x60 读取扫描码，建立扫描码到 ASCII 码的映射表。
+处理 Shift/CapsLock 状态，实现按键缓冲区（Ring Buffer）。
+Day 12：物理内存管理
+在 Bootloader 阶段通过 BIOS E820 或 Multiboot 协议获取内存布局图（哪些可用，哪些被硬件保留）。
+实现物理页帧分配器（使用位图 Bitmap 或 链表），实现 alloc_page() 和 free_page()。
+Day 13：虚拟内存与分页（Paging）
+理解页目录（PD）和页表（PT）。
+编写汇编代码开启 CR0 的 PG 位，启用分页机制。
+将内核空间（如前 4MB 或更高）映射到虚拟地址空间，确保开启分页后内核不会崩溃。
+Day 14：堆内存分配器（kmalloc）
+在物理页的基础上，实现内核堆管理。
+实现简单的 kmalloc() 和 kfree()（可以参考链表分配算法或 Slab 分配器雏形）。
+Day 15：引入 GRUB/Multiboot（可选但强烈推荐）
+手写 Bootloader 太繁琐。这一天学习使用 GRUB 作为 Bootloader。
+编写符合 Multiboot 标准的 Header，让 GRUB 帮你完成保护模式切换、内存检测和内核加载，你直接从 kernel_main 开始写，大幅提升后续开发效率。
+🔴 阶段四：灵魂注入（进程与用户态）
+从“单道程序”进化为真正的“多任务操作系统”。
+Day 16：进程控制块（PCB）与上下文切换
+设计 task_struct（包含寄存器状态、栈指针、进程ID、状态）。
+用纯汇编编写 switch_to() 函数，实现 CPU 寄存器上下文的保存与恢复。
+Day 17：内核线程与调度器
+实现时间片轮转调度算法（Round-Robin）。
+在定时器中断（Tick）中触发调度器，实现多个内核线程的并发打印（验证调度是否成功）。
+Day 18：用户态（Ring 3）的鸿沟
+配置 TSS（任务状态段），用于在陷入内核时保存用户态的栈指针。
+修改 GDT，添加用户态的代码段和数据段。
+通过 iret 指令，带着 Ring 3 的权限跳转到用户态代码。
+Day 19：系统调用（System Call）
+设计系统调用接口（通过 int 0x80 软中断触发）。
+实现 sys_write（向屏幕写字符）和 sys_exit（终止进程）。
+Day 20：第一个用户态程序
+在内存中硬编码一段用户态机器码（或加载简单的二进制）。
+让它在 Ring 3 下运行，并通过系统调用打印 "Hello from User Mode!"。
+🟣 阶段五：持久化与生态（文件系统）
+没有文件系统的 OS 只是一个玩具，有了它才是工具。
+Day 21：ATA/IDE 硬盘驱动
+编写 PIO（Programmed I/O）模式的磁盘驱动。
+通过端口操作（0x1F0 - 0x1F7）实现读取和写入硬盘扇区（Sector）的功能。
+Day 22：VFS（虚拟文件系统）框架
+设计抽象层：inode（文件元数据）, dentry（目录项）, file（打开的文件实例）。
+定义 VFS 的接口：vfs_open, vfs_read, vfs_write, vfs_close。
+Day 23：实现极简文件系统
+不要一开始就搞 FAT32/ext4。自己设计一个简单的 FS（如 Superblock + Inode位图 + 数据块），或者实现一个只读的 FAT16/TAR 内存盘（Ramdisk）。
+将其挂载到 VFS 的根目录 /。
+Day 24：Shell 的诞生
+结合键盘驱动、VGA驱动和文件系统。
+实现一个命令行解释器（Shell），支持读取命令、解析参数、从文件系统加载并执行内置命令（如 ls, cat, echo）。
+🟤 阶段六：现代 OS 的门槛（ELF 与进阶）
+让 OS 能够运行编译好的标准 C 程序。
+Day 25：ELF 文件解析
+学习 ELF（Executable and Linkable Format）文件格式。
+编写解析器，读取 ELF Header 和 Program Header。
+Day 26：用户程序的加载与执行
+实现 exec() 系统调用：将 ELF 文件的代码段和数据段映射到用户态虚拟内存空间。
+设置用户态栈，跳转到 ELF 的入口点（_start）。
+里程碑：在 QEMU 中运行一个用标准 GCC 编译的 C 语言 "Hello World" 可执行文件！
+Day 27：进程管理进阶（fork 雏形）
+实现写时复制（Copy-on-Write, COW）或简单的内存拷贝。
+实现 fork() 系统调用，让进程可以自我复制。
+Day 28：管道（Pipe）与 IPC
+实现进程间通信的基础：匿名管道。
+在 Shell 中支持 | 管道符（如 cat file | grep text）。
+Day 29：代码重构与内存泄漏排查
+使用 QEMU 的 GDB 远程调试功能，排查内核中的内存泄漏和死锁。
+优化代码结构，将杂乱的代码分模块（mm/, fs/, kernel/, drivers/）。
+Day 30：总结、文档与下一步规划
+编写 README，记录你的 OS 名字、特性、截图。
+规划下一阶段：网络协议栈（TCP/IP）、图形界面（GUI）、或者移植到 RISC-V 架构。
+📚 必备“圣经”与参考资料
+不要试图自己凭空发明轮子，遇到卡壳时，以下资料是你的救命稻草：
+OSDev Wiki (wiki.osdev.org)
+地位：OS 开发者的维基百科，绝对的核心。遇到任何硬件端口、数据结构、协议，先查这里。
+《Orange's：一个操作系统的实现》（于渊 著）
+地位：中文 OS 开发入门第一神书。手把手教你写 Bootloader 和内核，代码极其详尽，适合跟着敲。
+《Operating Systems: Three Easy Pieces (OSTEP)》
+地位：理论神书。当你不知道“为什么要这么设计”时，看这本书的虚拟化、并发、持久化三篇。
+JamesM's kernel development tutorials
+地位：经典的英文图文教程，适合快速实现一个带分页和进程调度的 x86 内核。
+Writing a Simple Operating System from Scratch (Nick Blundell)
+地位：短小精悍的 PDF 指南，适合周末快速跑通一个极简 OS。
