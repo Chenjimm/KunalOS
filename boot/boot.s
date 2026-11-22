@@ -1,3 +1,4 @@
+
 [bits 16]
 
 global start
@@ -8,17 +9,21 @@ start:
 	mov ds, ax
 	mov es, ax
 	mov ss, ax
+	mov sp, ax
 
-	mov si, hello_string
+	mov bx, hello_string
+	call print_start
 
-print_loop:
-	mov ah, 0x0e
-	mov al, [si]
-	cmp al, 0
-	je load_disk
-	int 0x10
-	add si, 1
-	jmp print_loop
+; 	mov si, hello_string
+; 
+; print_loop:
+; 	mov ah, 0x0e
+; 	mov al, [si]
+; 	cmp al, 0
+; 	je load_disk
+; 	int 0x10
+; 	add si, 1
+; 	jmp print_loop
 
 load_disk:
 	mov si, dap
@@ -43,7 +48,9 @@ error:
 	hlt
 
 hello_string:
-	db "Hello, OS!", 0x0d, 0x0a, "loading disk...", 0x0d, 0x0a, 0
+	db "Hello, KunalOS!", 0x0d, 0x0a, "loading disk...", 0x0d, 0x0a, 0
+
+%include "../include/asm/print.s"
 
 times 510-($-$$) db 0
 dw 0xaa55
