@@ -1,4 +1,3 @@
-
 [bits 16]
 
 global start
@@ -13,17 +12,6 @@ start:
 
 	mov bx, hello_string
 	call print_start
-
-; 	mov si, hello_string
-; 
-; print_loop:
-; 	mov ah, 0x0e
-; 	mov al, [si]
-; 	cmp al, 0
-; 	je load_disk
-; 	int 0x10
-; 	add si, 1
-; 	jmp print_loop
 
 load_disk:
 	mov si, dap

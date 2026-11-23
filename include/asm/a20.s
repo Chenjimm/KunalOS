@@ -84,12 +84,14 @@ int_a20:
 	ret
 
 fast_a20:
-	in al, 0x92
-	or al, 2
+	in  al, 0x92
+	test al, 2          ; 检查 A20 是否已开启
+	jnz fastdone
+	or  al, 2           ; 开启 Bit 1 (A20)
+	and al, 0xFE        ; 确保 Bit 0 (快速复位) 为 0
 	out 0x92, al
+fastdone:
 	ret
-
-
 
 ; Use the wrap-around mechanism to check whether the A20 bus is enabled.
 ; a20 is not enable if ax = 1

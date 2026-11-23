@@ -21,6 +21,20 @@ SECTIONS
 	/* The MBR only reads 64 sectors after the boot sector. */
 	ASSERT(SIZEOF(.stage2) <= 64 * 512, "stage2 is too large for the MBR to load")
 
+	. = 0x10000;
+
+	.kernel : {
+	    KEEP(*(.kernel))
+	    *(.text*)
+	    *(.rodata*)
+	    *(.data*)
+	}
+	
+	.bss : {
+	    *(.bss*)
+	    *(COMMON)
+
+	}
 	/DISCARD/ : {
 		*(.comment)
 		*(.note*)

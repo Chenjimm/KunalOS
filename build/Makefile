@@ -4,25 +4,31 @@ LD        := i686-elf-ld
 OBJCOPY   := i686-elf-objcopy
 QEMU      := qemu-system-i386
 
-# 16-bit absolute relocations are safe here: the boot code is linked at 0x7C00.
+ROOT      := ..
+
 NASMFLAGS := -f elf32 -Wall -w-reloc-abs-word
 LDFLAGS   := -m elf_i386 -T linker.ld
+GCCFLAGS  := -m32 -ffreestanding -fno-pic -fno-stack-protector -fno-builtin -nostdinc -c
 
-OBJS      := boot.o stage2.o
+OBJS      := boot.o stage2.o kernel.o
 BOOT_ELF  := boot.elf
 BOOT_BIN  := boot.bin
 IMAGE     := os.img
 
-# boot.s reads 127 sectors starting at LBA 1, so the image needs
-# 1 + 127 = 128 sectors (64 KiB).
-IMAGE_SECTORS := 128
+IMAGE_SECTORS := 64
 
 .PHONY: all run debug clean
 
 all: $(IMAGE)
 
-%.o: %.s
+boot.o: $(ROOT)/boot/boot.s
 	$(NASM) $(NASMFLAGS) $< -o $@
+
+stage2.o: $(ROOT)/boot/stage2.s
+	$(NASM) $(NASMFLAGS) $< -o $@
+
+kernel.o: $(ROOT)/kernel/kernel.c
+	$(GCC) $(GCCFLAGS) $< -o $@
 
 $(BOOT_ELF): $(OBJS) linker.ld
 	$(LD) $(LDFLAGS) -o $@ $(OBJS)
