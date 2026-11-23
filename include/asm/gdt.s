@@ -59,7 +59,7 @@ GDTEnd:
 
 GDTDescriptor:
 	dw GDTEnd - GDTStart - 1 ; limit
-	dw GDTStart ; limit
+	dd GDTStart ; base
 
 CodeSelector:
 	CODE_SEL equ GDTKernalModeCodeSegment - GDTStart

@@ -24,7 +24,7 @@ load_disk:
 dap:
 	db 0x10
 	db 0x00
-	dw 64
+	dw 127
 	dw 0x0000
 	dw 0x07e0
 	dq 0x0000000000000001

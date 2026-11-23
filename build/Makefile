@@ -15,7 +15,7 @@ BOOT_ELF  := boot.elf
 BOOT_BIN  := boot.bin
 IMAGE     := os.img
 
-IMAGE_SECTORS := 64
+IMAGE_SECTORS := 127
 
 .PHONY: all run debug clean
 

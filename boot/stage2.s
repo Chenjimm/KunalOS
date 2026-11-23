@@ -13,15 +13,17 @@ stage2_start:
 	je a20_fail
 	mov bx, a20_success
 	call print_start
-	jmp $
 
 ; load GDT(falt model) and enter 32-bit mode
 	call SwitchToProtectedMode
 
+[bits 32]
+extern kernel_main
+
 BeginProtectedMode:
-	mov bx, ProtectedModeString
-	call print_start
-	jmp $
+	call kernel_main
+	hlt
+
 
 a20_fail:
 	mov bx, a20_fail_string
@@ -36,9 +38,6 @@ a20_success:
 
 a20_fail_string:
 	db "a20 fail", 0x0d, 0x0a, 0
-
-ProtectedModeString:
-	db "Protected Mode!!!", 0x0d, 0x0a, 0
 
 %include "../include/asm/print.s"
 %include "../include/asm/a20.s"

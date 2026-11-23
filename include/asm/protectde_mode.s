@@ -5,7 +5,6 @@
 ; 5. set the registers
 
 [bits 16]
-
 SwitchToProtectedMode:
 	cli
 	lgdt [GDTDescriptor]
