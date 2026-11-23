@@ -1,9 +1,8 @@
+#include "../include/kernel.h"
+
 void
 kernel_main()
 {
-	goto final;
-
-final:
 	for(;;)
 	{
 	}
