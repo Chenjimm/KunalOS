@@ -54,22 +54,11 @@ kernel_main()
 	CloseVAGCursor();
 	VGAClearScreen();
 
-	VGAWriteChar('H', VAG_WHITE, VAG_BLACK, (vector){0, 0});
-	VGAWriteChar('e', VAG_WHITE, VAG_BLACK, (vector){1, 0});
-	VGAWriteChar('l', VAG_WHITE, VAG_BLACK, (vector){2, 0});
-	VGAWriteChar('l', VAG_WHITE, VAG_BLACK, (vector){3, 0});
-	VGAWriteChar('o', VAG_WHITE, VAG_BLACK, (vector){4, 0});
-	VGAWriteChar(',', VAG_WHITE, VAG_BLACK, (vector){5, 0});
-	VGAWriteChar('k', VAG_WHITE, VAG_BLACK, (vector){6, 0});
-	VGAWriteChar('u', VAG_WHITE, VAG_BLACK, (vector){7, 0});
-	VGAWriteChar('n', VAG_WHITE, VAG_BLACK, (vector){8, 0});
-	VGAWriteChar('a', VAG_WHITE, VAG_BLACK, (vector){9, 0});
-	VGAWriteChar('l', VAG_WHITE, VAG_BLACK, (vector){10, 0});
-	VGAWriteChar('O', VAG_WHITE, VAG_BLACK, (vector){11, 0});
-	VGAWriteChar('S', VAG_WHITE, VAG_BLACK, (vector){12, 0});
-	VGAWriteChar('!', VAG_WHITE, VAG_BLACK, (vector){13, 0});
+	vector VGACursor = {0, 0};
+	VGAWriteChar(0, VAG_BLACK, VAG_WHITE, VGACursor);
 
 	for(;;)
 	{
+		asm("hlt");
 	}
 }
