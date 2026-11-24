@@ -26,7 +26,7 @@ MBR 只有 512 字节，不够用。编写代码使用 BIOS 中断 int 0x13 将�
 设置栈指针（ESP），使用汇编 jmp 跳转到 C 语言的 kernel_main() 函数。
 🟡 阶段二：内核的感官（屏幕、串口与中断）
 进入 C 语言世界，开始接管硬件。
-Day 6：VGA 文本模式驱动
+[done]Day 6：VGA 文本模式驱动
 抛弃 BIOS 中断。直接操作显存物理地址 0xB8000。
 实现 kputchar() 和 kputs()，处理光标换行、滚屏逻辑。
 Day 7：实现 kprintf
