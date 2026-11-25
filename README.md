@@ -9,4 +9,4 @@ cd build
 make
 ```
 
-tou can also use `make run` to run the operating system and `make clean` to clean up files.
+You can also use `make run` to run the operating system and `make clean` to clean up files.
