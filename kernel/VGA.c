@@ -119,7 +119,7 @@ void
 VGAPrintf(vector *VGACursor, char* String, ...)
 {
 	va_list ArgsPointer;
-	va_start(ArgsPointer, VGACursor);
+	va_start(ArgsPointer, String);
 	int i = 0;
 	while(String[i] != 0)
 	{

@@ -8,9 +8,10 @@ kernel_main()
 	vector VGACursor = {0, 0};
 	VGAClearScreen(&VGACursor);
 
-	VGAPutString(&VGACursor, "Hello OS\n");
+	VGAPrintf(&VGACursor, "Hello, %s!\n", "KunalOS");
 
 	for(;;)
 	{
+		asm("hlt");
 	}
 }
