@@ -28,3 +28,24 @@ typedef struct vector {
 	int X;
 	int Y;
 } vector;
+
+void
+CloseBIOSCursor();
+
+void
+VGAWriteChar(unsigned char CharCode, uint8 CharColor, uint8 BackgroundColor, vector Vector);
+
+void
+VGAClearScreen(vector* VGACursor);
+
+void
+VGAScroll(vector *VGACursor);
+
+void
+VGAChangeLine(vector *VGACursor);
+
+void
+VGAPutChar(vector *VGACursor, unsigned char CharCode);
+
+void
+VGAPutString(vector *VGACursor, char* String);

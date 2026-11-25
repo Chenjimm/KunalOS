@@ -12,6 +12,14 @@ stage2_start:
 	cmp ax, 1
 	je a20_fail
 	mov bx, a20_success
+
+; clear screen
+	mov ax, 0x0600
+	mov bx, 0x0700
+	mov cx, 0
+	mov dx, 0x184f
+	int 0x10
+
 	call print_start
 
 ; load GDT(falt model) and enter 32-bit mode
