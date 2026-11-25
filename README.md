@@ -1,5 +1,5 @@
 # KunalOS
-This OS is writed for fun.
+This operating system was written out of interest.
 
 ## Build
 
