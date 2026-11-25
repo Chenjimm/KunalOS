@@ -10,7 +10,6 @@ kernel_main()
 
 	VGAPutString(&VGACursor, "Hello OS\n");
 
-
 	for(;;)
 	{
 	}

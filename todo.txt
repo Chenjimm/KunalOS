@@ -29,7 +29,7 @@ MBR 只有 512 字节，不够用。编写代码使用 BIOS 中断 int 0x13 将�
 [done]Day 6：VGA 文本模式驱动
 抛弃 BIOS 中断。直接操作显存物理地址 0xB8000。
 实现 kputchar() 和 kputs()，处理光标换行、滚屏逻辑。
-Day 7：实现 kprintf
+[done]Day 7：实现 kprintf
 实现变参函数（va_list）。
 支持 %d, %x, %s, %c 格式化输出。这是你未来几个月最重要的调试工具。
 Day 8：串口输出（Serial Port）

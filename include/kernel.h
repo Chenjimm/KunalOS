@@ -1,3 +1,5 @@
+#include <stdarg.h>
+
 // VAG Color
 #define VGA_BLACK         0x0
 #define VGA_BLUE          0x1
@@ -49,3 +51,6 @@ VGAPutChar(vector *VGACursor, unsigned char CharCode);
 
 void
 VGAPutString(vector *VGACursor, char* String);
+
+void
+VGAPrintf(vector *VGACursor, char* String, ...);

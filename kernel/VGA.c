@@ -1,6 +1,5 @@
 #include "../include/kernel.h"
 
-
 /*  VGA
  * 
  *  the linear text buffer is located in physical address 0xB8000.
@@ -116,51 +115,92 @@ VGAPutString(vector *VGACursor, char* String)
 	}
 }
 
-// void
-// VGAPrintf(vector *VGACursorPointer, unsigned char *String, ...)
-// {
-// 	va_list ArgsPointer = NULL;
-// 	va_start(ArgsPointer, String);
-// 
-// 	int i = 0;
-// 	while(String[i]!=0)
-// 	{
-// 		unsigned char Char = String[i];
-// 
-// 		if(Char == '%')
-// 		{
-// 			Char = String[i+1];
-// 			switch(Char)
-// 			{
-// 				case d:
-// 				{
-// 					int Int = va_arg(ArgsPointer, int);
-// 					unsigned char CharCode = (char)Int;
-// 				}break
-// 
-// 				// case x:
-// 				// {
-// 				// 	int Int = va_arg(ArgsPointer, int);
-// 				// }break
-// 
-// 				// case s:
-// 				// {
-// 				// 	unsigned char* String = va_arg(ArgsPointer, unsigned char*);
-// 				// }break
-// 
-// 				// case c:
-// 				// {
-// 				// 	unsigned char Char = va_arg(ArgsPointer, unsigned char);
-// 				// }break
-// 			}
-// 			i++
-// 		}
-// 		else
-// 		{
-// 			VGAPutChar(VGACursorPointer, Char);
-// 		}
-// 		
-// 		i++;
-// 	}
-// }
+void
+VGAPrintf(vector *VGACursor, char* String, ...)
+{
+	va_list ArgsPointer;
+	va_start(ArgsPointer, VGACursor);
+	int i = 0;
+	while(String[i] != 0)
+	{
+		char Char = String[i];
+		if(Char == '%')
+		{
+			i++;
+			Char = String[i];
+			switch(Char)
+			{
+				case 'd':
+				{
+					int32 Base = 10;
+					int32 Value = va_arg(ArgsPointer, int);
+					char Index[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+					char Format[256] = {};
+					if(Value < 0)
+					{
+						VGAPutChar(VGACursor, '-');
+						Value = -Value;
+					}
 
+					int32 Length = 0;
+					do
+					{
+						Format[Length++] = Index[Value%Base];
+						Value /= Base;
+					}
+					while(Value);
+					Length--;
+
+					for(int32 PrintIndex = Length; PrintIndex >= 0; PrintIndex--)
+					{
+						VGAPutChar(VGACursor, Format[PrintIndex]);
+					}
+				} break;
+
+				case 'x':
+				{
+					int32 Base = 16;
+					int32 Value = va_arg(ArgsPointer, int);
+					char Index[] = "0123456789ABCDEF";
+					char Format[256] = {};
+					if(Value < 0)
+					{
+						VGAPutChar(VGACursor, '-');
+						Value = -Value;
+					}
+
+					int32 Length = 0;
+					do
+					{
+						Format[Length++] = Index[Value%Base];
+						Value /= Base;
+					}
+					while(Value);
+					Length--;
+
+					for(int32 PrintIndex = Length; PrintIndex >= 0; PrintIndex--)
+					{
+						VGAPutChar(VGACursor, Format[PrintIndex]);
+					}
+				} break;
+
+				case 's':
+				{
+					char* Value = va_arg(ArgsPointer, char*);
+					VGAPutString(VGACursor, Value);
+				} break;
+
+				case 'c':
+				{
+					unsigned char Value = (unsigned char)va_arg(ArgsPointer, int);
+					VGAPutChar(VGACursor, Value);
+				} break;
+			}
+		}
+		else
+		{
+			VGAPutChar(VGACursor, Char);
+		}
+		i++;
+	}
+}
