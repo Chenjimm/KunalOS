@@ -1,6 +1,6 @@
 #include <stdarg.h>
 
-// VAG Color
+// VAG
 #define VGA_BLACK         0x0
 #define VGA_BLUE          0x1
 #define VGA_GREEN         0x2
@@ -54,3 +54,36 @@ VGAPutString(vector *VGACursor, char* String);
 
 void
 VGAPrintf(vector *VGACursor, char* String, ...);
+
+// Serial Port
+
+// 要和串口进行通行，首先要对串口初始化
+// 要设置串口的连接速度——波特率，必须与其他设备相同。 一般使用较低的波特率。
+// 还要设置相同的奇偶校验类型，和字符位数
+// 初始化后，还要设置中断处理程序。
+// IRQ会检查是否收到数据,收到则会进行处理，还会检查对方是否准备好接收数据。
+// 初始化COM1
+
+#define PORT 0x3f8 // COM1 base address
+
+
+void
+outb(uint16 port, uint8 val);
+
+uint8
+inb(uint16 port);
+
+int
+InitSerialPort();
+
+int
+serial_received();
+
+char
+SerialRead();
+
+int
+is_transmit_empty();
+
+void
+SerialPutChar(char a);
