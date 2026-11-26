@@ -10,7 +10,7 @@ NASMFLAGS := -f elf32 -Wall -w-reloc-abs-word
 LDFLAGS   := -m elf_i386 -T linker.ld
 GCCFLAGS  := -Wall -Wextra -m32 -ffreestanding -fno-pic -fno-stack-protector -fno-builtin  -c
 
-OBJS      := boot.o stage2.o kernel.o VGA.o serial_port.o
+OBJS      := boot.o stage2.o kernel.o VGA.o asmfunc.o serial_port.o
 BOOT_ELF  := boot.elf
 BOOT_BIN  := boot.bin
 IMAGE     := os.img
@@ -30,10 +30,13 @@ stage2.o: $(ROOT)/boot/stage2.s
 kernel.o: $(ROOT)/kernel/kernel.c
 	$(GCC) $(GCCFLAGS) $< -o $@
 
+asmfunc.o: $(ROOT)/kernel/asmfunc.c
+	$(GCC) $(GCCFLAGS) $< -o $@
+
 VGA.o: $(ROOT)/kernel/VGA.c
 	$(GCC) $(GCCFLAGS) $< -o $@
 
-serial_port.o: ../kernel/serial_port.c
+serial_port.o: $(ROOT)/kernel/serial_port.c
 	$(GCC) $(GCCFLAGS) $< -o $@
 
 $(BOOT_ELF): $(OBJS) linker.ld
