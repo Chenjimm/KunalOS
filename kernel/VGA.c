@@ -105,7 +105,7 @@ VGAPutChar(vector *VGACursor, unsigned char CharCode)
 void
 VGAPutString(vector *VGACursor, char* String)
 {
-	int32 i = 0;
+	int i = 0;
 	unsigned char Char = String[i];
 	while(Char!=0)
 	{
@@ -132,8 +132,8 @@ VGAPrintf(vector *VGACursor, char* String, ...)
 			{
 				case 'd':
 				{
-					int32 Base = 10;
-					int32 Value = va_arg(ArgsPointer, int);
+					int Base = 10;
+					int Value = va_arg(ArgsPointer, int);
 					char Index[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 					char Format[256] = {};
 					if(Value < 0)
@@ -142,7 +142,7 @@ VGAPrintf(vector *VGACursor, char* String, ...)
 						Value = -Value;
 					}
 
-					int32 Length = 0;
+					int Length = 0;
 					do
 					{
 						Format[Length++] = Index[Value%Base];
@@ -151,7 +151,7 @@ VGAPrintf(vector *VGACursor, char* String, ...)
 					while(Value);
 					Length--;
 
-					for(int32 PrintIndex = Length; PrintIndex >= 0; PrintIndex--)
+					for(int PrintIndex = Length; PrintIndex >= 0; PrintIndex--)
 					{
 						VGAPutChar(VGACursor, Format[PrintIndex]);
 					}
@@ -159,8 +159,8 @@ VGAPrintf(vector *VGACursor, char* String, ...)
 
 				case 'x':
 				{
-					int32 Base = 16;
-					int32 Value = va_arg(ArgsPointer, int);
+					int Base = 16;
+					int Value = va_arg(ArgsPointer, int);
 					char Index[] = "0123456789ABCDEF";
 					char Format[256] = {};
 					if(Value < 0)
@@ -169,7 +169,7 @@ VGAPrintf(vector *VGACursor, char* String, ...)
 						Value = -Value;
 					}
 
-					int32 Length = 0;
+					int Length = 0;
 					do
 					{
 						Format[Length++] = Index[Value%Base];
@@ -178,7 +178,7 @@ VGAPrintf(vector *VGACursor, char* String, ...)
 					while(Value);
 					Length--;
 
-					for(int32 PrintIndex = Length; PrintIndex >= 0; PrintIndex--)
+					for(int PrintIndex = Length; PrintIndex >= 0; PrintIndex--)
 					{
 						VGAPutChar(VGACursor, Format[PrintIndex]);
 					}

@@ -45,7 +45,7 @@ $(IMAGE): $(BOOT_BIN)
 	@echo "built $@"
 
 run: $(IMAGE)
-	$(QEMU) --display cocoa,zoom-to-fit=on -full-screen -drive format=raw,file=$(IMAGE)
+	$(QEMU) --display cocoa,zoom-to-fit=on -full-screen -drive format=raw,file=$(IMAGE) -serial stdio
 
 debug: $(IMAGE)
 	$(QEMU) -drive format=raw,file=$(IMAGE) -s -S
